@@ -19,14 +19,10 @@ namespace Snakes_on_a_Game
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D snakeTexture;
-        Random rand = new Random();
-        Texture2D squareTexture;
-        Rectangle currentSquare;
         
         List<Vector2> snake = new List<Vector2>();
         float timeRemaining = 0.0f;
         float timeTotal = 0.3f;
-        float TimePerSquare = 2.00f;
         int direction = 2; // 0= Down, 1= right, 2= up, 3= left \\
         public Game1()
         {
@@ -60,7 +56,6 @@ namespace Snakes_on_a_Game
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             snakeTexture = Content.Load<Texture2D>(@"SQUARE");
-            squareTexture = Content.Load<Texture2D>(@"SQUARE");
             // TODO: use this.Content to load your game content here
         }
 
@@ -70,7 +65,6 @@ namespace Snakes_on_a_Game
         /// </summary>
         protected override void UnloadContent()
         {
-            
             // TODO: Unload any non ContentManager content here
         }
 
@@ -111,15 +105,6 @@ namespace Snakes_on_a_Game
            (float)gameTime.ElapsedGameTime.TotalSeconds);
             Window.Title = "Time " + timeRemaining; 
             base.Update(gameTime);
-
-            if (timeRemaining == 0.0f)
-            {
-                currentSquare = new Rectangle(
-                rand.Next(0, this.Window.ClientBounds.Width - 25),
-                rand.Next(0, this.Window.ClientBounds.Height - 25),
-                );
-                timeRemaining = TimePerSquare;
-            }
         }
 
         /// <summary>

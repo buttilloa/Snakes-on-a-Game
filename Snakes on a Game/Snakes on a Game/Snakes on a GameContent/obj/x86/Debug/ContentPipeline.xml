@@ -7,8 +7,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\eahscs\Desktop\Snakes-on-a-Game\Snakes on a Game\Snakes on a Game\Snakes on a Game\bin\x86\Debug\Content\SQUARE.xnb</Output>
-      <Time>2014-10-20T07:50:51.8468-04:00</Time>
+      <Output>C:\Users\eahscs\Documents\Visual Studio 2010\Projects\Snakes on a Game\Snakes on a Game\Snakes on a Game\bin\x86\Debug\Content\SQUARE.xnb</Output>
+      <Time>2014-10-17T08:03:15.0902-04:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
@@ -16,10 +16,10 @@
       <TargetProfile>HiDef</TargetProfile>
       <BuildConfiguration>Debug</BuildConfiguration>
       <CompressContent>false</CompressContent>
-      <RootDirectory>C:\Users\eahscs\Desktop\Snakes-on-a-Game\Snakes on a Game\Snakes on a Game\Snakes on a GameContent\</RootDirectory>
-      <LoggerRootDirectory>C:\Users\eahscs\Desktop\Snakes-on-a-Game\Snakes on a Game\Snakes on a Game\Snakes on a Game\</LoggerRootDirectory>
-      <IntermediateDirectory>C:\Users\eahscs\Desktop\Snakes-on-a-Game\Snakes on a Game\Snakes on a Game\Snakes on a GameContent\obj\x86\Debug\</IntermediateDirectory>
-      <OutputDirectory>C:\Users\eahscs\Desktop\Snakes-on-a-Game\Snakes on a Game\Snakes on a Game\Snakes on a Game\bin\x86\Debug\Content\</OutputDirectory>
+      <RootDirectory>C:\Users\eahscs\Documents\Visual Studio 2010\Projects\Snakes on a Game\Snakes on a Game\Snakes on a GameContent\</RootDirectory>
+      <LoggerRootDirectory>C:\Users\eahscs\Documents\Visual Studio 2010\Projects\Snakes on a Game\Snakes on a Game\Snakes on a Game\</LoggerRootDirectory>
+      <IntermediateDirectory>C:\Users\eahscs\Documents\Visual Studio 2010\Projects\Snakes on a Game\Snakes on a Game\Snakes on a GameContent\obj\x86\Debug\</IntermediateDirectory>
+      <OutputDirectory>C:\Users\eahscs\Documents\Visual Studio 2010\Projects\Snakes on a Game\Snakes on a Game\Snakes on a Game\bin\x86\Debug\Content\</OutputDirectory>
     </Settings>
     <Assemblies>
       <Assembly>
