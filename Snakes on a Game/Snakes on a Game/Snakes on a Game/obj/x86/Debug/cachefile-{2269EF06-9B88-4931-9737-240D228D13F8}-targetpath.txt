@@ -1,1 +1,6 @@
 Content\SQUARE.xnb
+Content\Om.xnb
+Content\Om.wma
+Content\Pew.xnb
+Content\Sneeze.xnb
+Content\Bwaaaah.xnb

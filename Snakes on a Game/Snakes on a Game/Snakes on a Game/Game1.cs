@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
+
 namespace Snakes_on_a_Game
 {
     /// <summary>
@@ -19,12 +20,19 @@ namespace Snakes_on_a_Game
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D snakeTexture;
-        
-        List<Vector2> snake = new List<Vector2>();
+        Snake snake1;
+        Snake snake2;
+        public Rectangle Pellet;
+        Random rand = new Random();
         float timeRemaining = 0.0f;
-        float timeTotal = 0.3f;
-        int direction = 2; // 0= Down, 1= right, 2= up, 3= left \\
+        float timeTotal = 0.2f;
+        Song Om;
+        SoundEffect Pew;
+        SoundEffect Sneeze;
+        SoundEffect Bwaaaah;
+    
         public Game1()
+
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -38,11 +46,17 @@ namespace Snakes_on_a_Game
         /// </summary>
         protected override void Initialize()
         {
-            snake.Add(new Vector2(400, 200));
-            snake.Add(new Vector2(400, 221));
-            snake.Add(new Vector2(400, 242));
-            snake.Add(new Vector2(400, 263));
-            snake.Add(new Vector2(400, 284));
+            snake1 = new Snake(600, 200, 22);
+            snake2 = new Snake(200, 200, 22);
+            Om = Content.Load<Song>("OM");
+            Pew = Content.Load<SoundEffect>("Pew");
+            Sneeze = Content.Load<SoundEffect>("Sneeze");
+            Bwaaaah = Content.Load<SoundEffect>("Bwaaaah");
+            Bwaaaah.Play();
+            MediaPlayer.Play(Om);
+            snake1.effect = Pew;
+            snake2.effect = Sneeze;
+            NewPellet();
 
             base.Initialize();
         }
@@ -75,38 +89,44 @@ namespace Snakes_on_a_Game
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-             KeyboardState keyState = Keyboard.GetState();
-            // Allows the game to exit
-             if (keyState.IsKeyDown(Keys.Down)&& direction != 2)direction = 0;
-             if (keyState.IsKeyDown(Keys.Right) && direction != 3)direction = 1;
-             if (keyState.IsKeyDown(Keys.Up)&& direction != 0)direction = 2;
-             if (keyState.IsKeyDown(Keys.Left) && direction != 1)direction = 3;
-            
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed) this.Exit();
+            KeyboardState keyState = Keyboard.GetState();
+
+
+            if (keyState.IsKeyDown(Keys.Down) && snake1.Facing != 2) snake1.Facing = 0;
+            if (keyState.IsKeyDown(Keys.Right) && snake1.Facing != 3) snake1.Facing = 1;
+            if (keyState.IsKeyDown(Keys.Up) && snake1.Facing != 0) snake1.Facing = 2;
+            if (keyState.IsKeyDown(Keys.Left) && snake1.Facing != 1) snake1.Facing = 3;
+
+            if (keyState.IsKeyDown(Keys.S) && snake2.Facing != 2) snake2.Facing = 0;
+            if (keyState.IsKeyDown(Keys.D) && snake2.Facing != 3) snake2.Facing = 1;
+            if (keyState.IsKeyDown(Keys.W) && snake2.Facing != 0) snake2.Facing = 2;
+            if (keyState.IsKeyDown(Keys.A) && snake2.Facing != 1) snake2.Facing = 3;
+
+            if (snake1.CheckCollisions(snake2.getFront(), ref snake2, this.Window)) snake1.isAlive = false;
+            if (snake2.CheckCollisions(snake1.getFront(), ref snake1, this.Window)) snake2.isAlive = false;
+
             if (timeRemaining == 0.0f)
             {
-                for(int i=snake.Count-1;i > 0;i--)
-                {
-                    snake[i] = snake[i - 1];
-                }
-                if(direction == 0)
-                snake[0] = new Vector2(snake[0].X, (snake[0].Y)+21);
-                if (direction == 1)
-                    snake[0] = new Vector2((snake[0].X +21), (snake[0].Y));
-                if (direction == 2)
-                    snake[0] = new Vector2(snake[0].X, (snake[0].Y)-21);
-                if (direction == 3)
-                    snake[0] = new Vector2((snake[0].X -21),(snake[0].Y));
+                snake1.Update();
+                snake2.Update();
+
+                if (snake1.DidEatPellet(Pellet) || snake2.DidEatPellet(Pellet)) NewPellet();
 
                 timeRemaining = timeTotal;
             }
             timeRemaining = MathHelper.Max(0, timeRemaining -
            (float)gameTime.ElapsedGameTime.TotalSeconds);
-            Window.Title = "Time " + timeRemaining; 
+
             base.Update(gameTime);
         }
-
+        public void NewPellet()
+        {
+            Pellet = new Rectangle(
+               rand.Next(25, this.Window.ClientBounds.Width - 25),
+               rand.Next(25, this.Window.ClientBounds.Height - 25),
+               16, 16);
+        }
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>
@@ -114,17 +134,31 @@ namespace Snakes_on_a_Game
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
+            int count = snake1.Count;
+            int count2 = snake2.Count;
             spriteBatch.Begin();
-            for (int i = 0; i < snake.Count; i++)
+            for (int i = 0; i < count; i++)
             {
+
                 spriteBatch.Draw(
                    snakeTexture,
-                   new Rectangle((int)snake[i].X, (int)snake[i].Y, 20, 20),
+                   new Rectangle((int)snake1.GetInstance(i).X, (int)snake1.GetInstance(i).Y, snake1.DrawSize, snake1.DrawSize),
                    new Rectangle(0, 0, 16, 16),
                    Color.PapayaWhip);
             }
-          
+            for (int i = 0; i < count2; i++)
+            {
+
+                spriteBatch.Draw(
+                   snakeTexture,
+                   new Rectangle((int)snake2.GetInstance(i).X, (int)snake2.GetInstance(i).Y, snake2.DrawSize, snake2.DrawSize),
+                   new Rectangle(0, 0, 16, 16),
+                   Color.Gray);
+            }
+            spriteBatch.Draw(
+               snakeTexture,
+               Pellet,
+               Color.White);
             spriteBatch.End();
 
             base.Draw(gameTime);
