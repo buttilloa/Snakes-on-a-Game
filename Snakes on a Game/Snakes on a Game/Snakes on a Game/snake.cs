@@ -21,8 +21,10 @@ namespace Snakes_on_a_Game
         public int DrawSize = 21;
         int speed = 0;
         public SoundEffect effect;
+       
         public Snake(int x, int y, int size)
         {
+            
             speed = size;
             int temp = size;
             snakeList.Add(new Vector2(x, y));
@@ -37,13 +39,15 @@ namespace Snakes_on_a_Game
         }
         public void AddBlock()
         {
-            snakeList.Add(new Vector2(snakeList[snakeList.Count - 1].X, snakeList[snakeList.Count - 1].Y + 21));
+            snakeList.Add(new Vector2(snakeList[snakeList.Count - 1].X, snakeList[snakeList.Count - 1].Y));
             Count++;
         }
         public void Update()
         {
             if (isAlive)
             {
+
+
                 Count = snakeList.Count;
 
                 for (int i = snakeList.Count - 1; i > 0; i--)
@@ -60,6 +64,25 @@ namespace Snakes_on_a_Game
                 if (Facing == 3)
                     snakeList[0] = new Vector2((snakeList[0].X - speed), (snakeList[0].Y));
             }
+            else{
+                snakeList.Clear();
+                int temp2 = speed;
+                int temp = temp2;
+                snakeList.Add(new Vector2(400, 200));
+                snakeList.Add(new Vector2(400, 200 + temp2));
+                temp2 += temp; ;
+                snakeList.Add(new Vector2(400, 200 + temp2));
+                temp2 += temp; ;
+                snakeList.Add(new Vector2(400, 200 + temp2));
+                temp2 += temp; ;
+                snakeList.Add(new Vector2(400, 200 + temp2));
+                isAlive = true;
+                Facing = 0;
+                Count = 5;
+
+            
+            }
+
         }
         public Boolean CheckCollisions(Rectangle EnemySnake, ref Snake snake2, GameWindow wind)
         {
@@ -74,7 +97,11 @@ namespace Snakes_on_a_Game
             int X = (int)snakeList[0].X;
             int Y = (int)snakeList[0].Y;
 
-            if (X > wind.ClientBounds.Width || X < 0 || Y > wind.ClientBounds.Height || Y < 0) return true;
+            if (X > wind.ClientBounds.Width )snakeList[0] = new Vector2(0,snakeList[0].Y);
+            if (X < 0)snakeList[0] = new Vector2(wind.ClientBounds.Width, snakeList[0].Y);
+            if (Y > wind.ClientBounds.Height) snakeList[0] = new Vector2(snakeList[0].X, 0);
+            if (Y < 0) snakeList[0] = new Vector2(snakeList[0].X, wind.ClientBounds.Height);
+              
 
 
             return false;

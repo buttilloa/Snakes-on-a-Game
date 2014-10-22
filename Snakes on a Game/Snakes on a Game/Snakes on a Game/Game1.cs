@@ -30,7 +30,8 @@ namespace Snakes_on_a_Game
         SoundEffect Pew;
         SoundEffect Sneeze;
         SoundEffect Bwaaaah;
-    
+        Color[] colors = { Color.Red, Color.Green, Color.Blue ,Color.Yellow, Color.Brown, Color.Wheat, Color.Transparent, Color.Tomato, Color.Peru, Color.Azure, Color.Aquamarine, Color.Firebrick};
+ 
         public Game1()
 
         {
@@ -47,7 +48,7 @@ namespace Snakes_on_a_Game
         protected override void Initialize()
         {
             snake1 = new Snake(600, 200, 22);
-            snake2 = new Snake(200, 200, 22);
+            snake2 = new Snake( 200, 200, 22);
             Om = Content.Load<Song>("OM");
             Pew = Content.Load<SoundEffect>("Pew");
             Sneeze = Content.Load<SoundEffect>("Sneeze");
@@ -105,7 +106,7 @@ namespace Snakes_on_a_Game
 
             if (snake1.CheckCollisions(snake2.getFront(), ref snake2, this.Window)) snake1.isAlive = false;
             if (snake2.CheckCollisions(snake1.getFront(), ref snake1, this.Window)) snake2.isAlive = false;
-
+            
             if (timeRemaining == 0.0f)
             {
                 snake1.Update();
@@ -144,7 +145,7 @@ namespace Snakes_on_a_Game
                    snakeTexture,
                    new Rectangle((int)snake1.GetInstance(i).X, (int)snake1.GetInstance(i).Y, snake1.DrawSize, snake1.DrawSize),
                    new Rectangle(0, 0, 16, 16),
-                   Color.PapayaWhip);
+                   Color.BlanchedAlmond);
             }
             for (int i = 0; i < count2; i++)
             {
@@ -153,12 +154,12 @@ namespace Snakes_on_a_Game
                    snakeTexture,
                    new Rectangle((int)snake2.GetInstance(i).X, (int)snake2.GetInstance(i).Y, snake2.DrawSize, snake2.DrawSize),
                    new Rectangle(0, 0, 16, 16),
-                   Color.Gray);
+                   Color.SlateGray);    
             }
             spriteBatch.Draw(
                snakeTexture,
                Pellet,
-               Color.White);
+               colors[rand.Next(0,colors.Count()-1)]);
             spriteBatch.End();
 
             base.Draw(gameTime);
