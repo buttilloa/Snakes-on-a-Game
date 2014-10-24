@@ -15,16 +15,20 @@ namespace Snakes_on_a_Game
     public class Snake
     {
         List<Vector2> snakeList = new List<Vector2>();
+        List<Color> partColor = new List<Color>();
         public int Facing = 2; // 0= Down, 1= right, 2= up, 3= left \\
         public int Count = 0;
+        public Boolean isAI = false;
         public Boolean isAlive = true;
         public int DrawSize = 21;
+        Random rnd = new Random();
         int speed = 0;
         public SoundEffect effect;
-       
-        public Snake(int x, int y, int size)
+
+        public Snake(int x, int y, int size, List<Color> colorScheme)
         {
-            
+
+            partColor = colorScheme;
             speed = size;
             int temp = size;
             snakeList.Add(new Vector2(x, y));
@@ -37,6 +41,7 @@ namespace Snakes_on_a_Game
             snakeList.Add(new Vector2(x, y + size));
             Count = 5;
         }
+
         public void AddBlock()
         {
             snakeList.Add(new Vector2(snakeList[snakeList.Count - 1].X, snakeList[snakeList.Count - 1].Y));
@@ -47,7 +52,6 @@ namespace Snakes_on_a_Game
             if (isAlive)
             {
 
-
                 Count = snakeList.Count;
 
                 for (int i = snakeList.Count - 1; i > 0; i--)
@@ -55,6 +59,7 @@ namespace Snakes_on_a_Game
                     snakeList[i] = snakeList[i - 1];
 
                 }
+
                 if (Facing == 0)
                     snakeList[0] = new Vector2(snakeList[0].X, (snakeList[0].Y) + speed);
                 if (Facing == 1)
@@ -64,7 +69,8 @@ namespace Snakes_on_a_Game
                 if (Facing == 3)
                     snakeList[0] = new Vector2((snakeList[0].X - speed), (snakeList[0].Y));
             }
-            else{
+            else
+            {
                 snakeList.Clear();
                 int temp2 = speed;
                 int temp = temp2;
@@ -80,14 +86,15 @@ namespace Snakes_on_a_Game
                 Facing = 0;
                 Count = 5;
 
-            
+
             }
 
         }
+        //Single Enemy Snake
         public Boolean CheckCollisions(Rectangle EnemySnake, ref Snake snake2, GameWindow wind)
         {
             Rectangle Front = new Rectangle((int)snakeList[0].X, (int)snakeList[0].Y, 20, 20);
-            for (int i = 2; i < snakeList.Count; i++)
+            for (int i = 1; i < snakeList.Count; i++)
             {
                 Rectangle Body = new Rectangle((int)snakeList[i].X, (int)snakeList[i].Y, 20, 20);
                 if (EnemySnake.Intersects(Body)) snake2.isAlive = false;
@@ -97,11 +104,35 @@ namespace Snakes_on_a_Game
             int X = (int)snakeList[0].X;
             int Y = (int)snakeList[0].Y;
 
-            if (X > wind.ClientBounds.Width )snakeList[0] = new Vector2(0,snakeList[0].Y);
-            if (X < 0)snakeList[0] = new Vector2(wind.ClientBounds.Width, snakeList[0].Y);
+            if (X > wind.ClientBounds.Width) snakeList[0] = new Vector2(0, snakeList[0].Y);
+            if (X < 0) snakeList[0] = new Vector2(wind.ClientBounds.Width, snakeList[0].Y);
             if (Y > wind.ClientBounds.Height) snakeList[0] = new Vector2(snakeList[0].X, 0);
             if (Y < 0) snakeList[0] = new Vector2(snakeList[0].X, wind.ClientBounds.Height);
-              
+
+
+
+            return false;
+        }
+        //Multiple Enemy Snakes
+        public Boolean CheckCollisions(Rectangle EnemySnake, Rectangle AiSnakeRect, ref Snake snake2, ref Snake AiSnake, GameWindow wind)
+        {
+            Rectangle Front = new Rectangle((int)snakeList[0].X, (int)snakeList[0].Y, 20, 20);
+            for (int i = 1; i < snakeList.Count; i++)
+            {
+                Rectangle Body = new Rectangle((int)snakeList[i].X, (int)snakeList[i].Y, 20, 20);
+                if (EnemySnake.Intersects(Body)) snake2.isAlive = false;
+                if (AiSnakeRect.Intersects(Body)) AiSnake.isAlive = false;
+                if (Front.Intersects(Body)) return true;
+
+            }
+            int X = (int)snakeList[0].X;
+            int Y = (int)snakeList[0].Y;
+
+            if (X > wind.ClientBounds.Width) snakeList[0] = new Vector2(0, snakeList[0].Y);
+            if (X < 0) snakeList[0] = new Vector2(wind.ClientBounds.Width, snakeList[0].Y);
+            if (Y > wind.ClientBounds.Height) snakeList[0] = new Vector2(snakeList[0].X, 0);
+            if (Y < 0) snakeList[0] = new Vector2(snakeList[0].X, wind.ClientBounds.Height);
+
 
 
             return false;
@@ -119,22 +150,24 @@ namespace Snakes_on_a_Game
             if (Pellet.Intersects(Front))
             {
                 AddBlock();
-                PlaySound(effect);
+                effect.Play();
                 return true;
             }
             else return false;
 
         }
-        public void PlaySound(SoundEffect Sound){
-            Sound.Play();
-    }
+        public Color getDrawColor(int part)
+        {
+            if (part >= partColor.Count())
+                return partColor[partColor.Count() - 1];
+            return partColor[part];
+        }
         public void SetSpeed(int NewSpeed)
         {
             speed = NewSpeed;
         }
         public Vector2 GetInstance(int X)
         {
-
             return snakeList[X];
         }
     }

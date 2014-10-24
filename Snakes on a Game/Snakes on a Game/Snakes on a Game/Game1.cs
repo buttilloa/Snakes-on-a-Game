@@ -22,18 +22,20 @@ namespace Snakes_on_a_Game
         Texture2D snakeTexture;
         Snake snake1;
         Snake snake2;
+        Snake Aisnake;
         public Rectangle Pellet;
         Random rand = new Random();
+        int AiDir;
         float timeRemaining = 0.0f;
         float timeTotal = 0.2f;
         Song Om;
         SoundEffect Pew;
         SoundEffect Sneeze;
         SoundEffect Bwaaaah;
-        Color[] colors = { Color.Red, Color.Green, Color.Blue ,Color.Yellow, Color.Brown, Color.Wheat, Color.Transparent, Color.Tomato, Color.Peru, Color.Azure, Color.Aquamarine, Color.Firebrick};
- 
+        Color[] DarkScheme = { Color.Black, Color.Black, Color.DarkGray, Color.DarkGray, Color.Gray, Color.SlateGray };
+        Color[] WhiteScheme = { Color.Pink, Color.Pink, Color.Blue, Color.Blue, Color.Red, Color.Red};
+        Color[] AiScheme = { Color.Brown }; 
         public Game1()
-
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -47,8 +49,10 @@ namespace Snakes_on_a_Game
         /// </summary>
         protected override void Initialize()
         {
-            snake1 = new Snake(600, 200, 22);
-            snake2 = new Snake( 200, 200, 22);
+            snake1 = new Snake(600, 200, 22, WhiteScheme.ToList());
+            snake2 = new Snake(200, 200, 22, DarkScheme.ToList());
+            Aisnake = new Snake(400, 200, 22, AiScheme.ToList());
+            Aisnake.isAI = true;
             Om = Content.Load<Song>("OM");
             Pew = Content.Load<SoundEffect>("Pew");
             Sneeze = Content.Load<SoundEffect>("Sneeze");
@@ -57,6 +61,7 @@ namespace Snakes_on_a_Game
             MediaPlayer.Play(Om);
             snake1.effect = Pew;
             snake2.effect = Sneeze;
+            Aisnake.effect = Bwaaaah;
             NewPellet();
 
             base.Initialize();
@@ -95,24 +100,32 @@ namespace Snakes_on_a_Game
 
 
             if (keyState.IsKeyDown(Keys.Down) && snake1.Facing != 2) snake1.Facing = 0;
-            if (keyState.IsKeyDown(Keys.Right) && snake1.Facing != 3) snake1.Facing = 1;
-            if (keyState.IsKeyDown(Keys.Up) && snake1.Facing != 0) snake1.Facing = 2;
-            if (keyState.IsKeyDown(Keys.Left) && snake1.Facing != 1) snake1.Facing = 3;
+            else if (keyState.IsKeyDown(Keys.Right) && snake1.Facing != 3) snake1.Facing = 1;
+            else if (keyState.IsKeyDown(Keys.Up) && snake1.Facing != 0) snake1.Facing = 2;
+            else if (keyState.IsKeyDown(Keys.Left) && snake1.Facing != 1) snake1.Facing = 3;
 
             if (keyState.IsKeyDown(Keys.S) && snake2.Facing != 2) snake2.Facing = 0;
-            if (keyState.IsKeyDown(Keys.D) && snake2.Facing != 3) snake2.Facing = 1;
-            if (keyState.IsKeyDown(Keys.W) && snake2.Facing != 0) snake2.Facing = 2;
-            if (keyState.IsKeyDown(Keys.A) && snake2.Facing != 1) snake2.Facing = 3;
+            else if (keyState.IsKeyDown(Keys.D) && snake2.Facing != 3) snake2.Facing = 1;
+            else if (keyState.IsKeyDown(Keys.W) && snake2.Facing != 0) snake2.Facing = 2;
+            else if (keyState.IsKeyDown(Keys.A) && snake2.Facing != 1) snake2.Facing = 3;
 
-            if (snake1.CheckCollisions(snake2.getFront(), ref snake2, this.Window)) snake1.isAlive = false;
-            if (snake2.CheckCollisions(snake1.getFront(), ref snake1, this.Window)) snake2.isAlive = false;
-            
+             if (AiDir == 0 && Aisnake.Facing != 2) Aisnake.Facing = 0;
+             if (AiDir == 1 && Aisnake.Facing != 3) Aisnake.Facing = 1;
+             if (AiDir == 2 && Aisnake.Facing != 0) Aisnake.Facing = 2;
+             if (AiDir == 3 && Aisnake.Facing != 1) Aisnake.Facing = 3;
+             
+            if (snake1.CheckCollisions(snake2.getFront(), Aisnake.getFront(), ref snake2, ref Aisnake, this.Window)) snake1.isAlive = false;
+            if (snake2.CheckCollisions(snake1.getFront(), Aisnake.getFront(), ref snake1, ref Aisnake, this.Window)) snake2.isAlive = false;
+            if (Aisnake.CheckCollisions(snake1.getFront(), snake2.getFront(), ref snake1, ref snake2, this.Window)) Aisnake.isAlive = false;
+
             if (timeRemaining == 0.0f)
             {
                 snake1.Update();
                 snake2.Update();
+                Aisnake.Update();
+                AiDir = rand.Next(0, 3);
 
-                if (snake1.DidEatPellet(Pellet) || snake2.DidEatPellet(Pellet)) NewPellet();
+                if (snake1.DidEatPellet(Pellet) || snake2.DidEatPellet(Pellet) || Aisnake.DidEatPellet(Pellet)) NewPellet();
 
                 timeRemaining = timeTotal;
             }
@@ -134,32 +147,40 @@ namespace Snakes_on_a_Game
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-            int count = snake1.Count;
-            int count2 = snake2.Count;
+            GraphicsDevice.Clear(Color.LemonChiffon);
+
             spriteBatch.Begin();
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < snake1.Count; i++)
             {
 
                 spriteBatch.Draw(
                    snakeTexture,
                    new Rectangle((int)snake1.GetInstance(i).X, (int)snake1.GetInstance(i).Y, snake1.DrawSize, snake1.DrawSize),
                    new Rectangle(0, 0, 16, 16),
-                   Color.BlanchedAlmond);
+                   snake1.getDrawColor(i));
             }
-            for (int i = 0; i < count2; i++)
+            for (int i = 0; i < snake2.Count; i++)
             {
 
                 spriteBatch.Draw(
                    snakeTexture,
                    new Rectangle((int)snake2.GetInstance(i).X, (int)snake2.GetInstance(i).Y, snake2.DrawSize, snake2.DrawSize),
                    new Rectangle(0, 0, 16, 16),
-                   Color.SlateGray);    
+                 snake2.getDrawColor(i));
+            }
+            for (int i = 0; i < Aisnake.Count; i++)
+            {
+
+                spriteBatch.Draw(
+                   snakeTexture,
+                   new Rectangle((int)Aisnake.GetInstance(i).X, (int)Aisnake.GetInstance(i).Y, Aisnake.DrawSize, Aisnake.DrawSize),
+                   new Rectangle(0, 0, 16, 16),
+                 Aisnake.getDrawColor(i));
             }
             spriteBatch.Draw(
                snakeTexture,
                Pellet,
-               colors[rand.Next(0,colors.Count()-1)]);
+               Color.Purple);
             spriteBatch.End();
 
             base.Draw(gameTime);
